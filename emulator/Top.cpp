@@ -45,13 +45,21 @@ sim_t* sim_t::exec ( sim_viz_t *viz ) {
   // for (size_t i = 0; i < viz->n_aud_frames; i++) {
     // music->Music__io_in_sample_l.values[0] = fromFloat(viz->in_samples[0][i]);
     // music->Music__io_in_sample_r.values[0] = fromFloat(viz->in_samples[1][i]);
-    music->Music__io_t.values[0] = fromDouble(viz->audio_tick);
+    // music->Music_t__io_time.values[0] = fromDouble(viz->audio_tick);
+    music->Music_s__io_sliders_0.values[0] = fromDouble(viz->sliders[0]);
+    music->Music_s__io_sliders_1.values[0] = fromDouble(viz->sliders[1]);
+    music->Music_s__io_sliders_2.values[0] = fromDouble(viz->sliders[2]);
+    music->Music_s__io_sliders_3.values[0] = fromDouble(viz->sliders[3]);
+    music->Music_s__io_sliders_4.values[0] = fromDouble(viz->sliders[4]);
+    music->Music_s__io_sliders_5.values[0] = fromDouble(viz->sliders[5]);
+    music->Music_s__io_sliders_6.values[0] = fromDouble(viz->sliders[6]);
+    music->Music_s__io_sliders_7.values[0] = fromDouble(viz->sliders[7]);
     music->clock_lo(reset);
     music->clock_hi(reset);
     // viz->out_samples[0][i] = toFloat(music->Music__io_out_0.values[0]);
     // viz->out_samples[1][i] = toFloat(music->Music__io_out_1.values[0]);
-    viz->speakers[0] = toDouble(music->Music__io_out_0.values[0]);
-    viz->speakers[1] = toDouble(music->Music__io_out_1.values[0]);
+    viz->speakers[0] = toDouble(music->Music__io_o_0.values[0]);
+    viz->speakers[1] = toDouble(music->Music__io_o_1.values[0]);
   // }
   ticks += 1;
 }

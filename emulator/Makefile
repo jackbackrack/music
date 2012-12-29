@@ -9,7 +9,7 @@ ifeq ($(OS2), Darwin)
   LIBS = $(GUI)/app.a  -lobjc -lode -framework GLUT -framework OpenGL -lopencv_core -lopencv_highgui -lopencv_video -lopencv_imgproc -lopencv_objdetect -lopencv_calib3d -L/usr/local/lib -L/opt/local/lib -lportaudio -lportmidi #-lsolid #-lglaux # -pg # -framework Foundation
   #HLLIBS =
   CPPFLAGS=-I.. -I/opt/local/include -I/usr/local/include -I/opt/local/include/OpenEXR -I/usr/local/include/SOLID -I$(GUI) -I$(CHISEL)/csrc -D IS_AUDIO=1
-  CXXFLAGS=-flat_namespace -Wno-write-strings -g  -D MACOSX=1 -D IS_ODE=1  # -pg  -O3
+  CXXFLAGS=-flat_namespace -Wno-write-strings -g -O3  -D MACOSX=1 -D IS_ODE=1  # -pg  
 else
   OS := $(strip $(shell uname -o))
   ifeq ($(OS), GNU/Linux)

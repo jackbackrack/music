@@ -13,6 +13,8 @@ object Main {
     args(0) match {
       case "music" => // FOR FPGA or ASIC one TILE with 8 queues in torus
         chiselMain(cArgs, () => new Music())
+      case "demo" => // FOR FPGA or ASIC one TILE with 8 queues in torus
+        chiselMain(cArgs, () => new Demo())
     }
     // chiselMainTest(args, () => { Component.isReportDims = false; new Fabric(2) }){
     //   c => new FabricTests(c)}
