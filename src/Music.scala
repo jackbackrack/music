@@ -115,10 +115,10 @@ class Music extends Component {
   }
   val s   = new Sliders();
   val o   = new Speakers();
-  val lfo = Interpolate(s.io.sliders(1), Dbl(0.0), Dbl(100.0)) * SinWave(Interpolate(s.io.sliders(2), Dbl(0.0), Dbl(20.0)));
-  val f   = Interpolate(s.io.sliders(0), Dbl(1000.0), Dbl(2000.0));
-  val vco = SinWave(f + lfo)
-  val vcf = VCF(f + Interpolate(s.io.sliders(3), Dbl(-1000.0), Dbl(2000.0)), s.io.sliders(4), vco);
+  val f   = Interpolate(s.io.sliders(0), Dbl(100.0), Dbl(1000.0));
+  val lfo = Interpolate(s.io.sliders(1), Dbl(0.0), Dbl(2.0)) * SawWave(Interpolate(s.io.sliders(2), Dbl(0.0), Dbl(20.0)));
+  val vco = SawWave(f + lfo)
+  val vcf = VCF(Interpolate(s.io.sliders(3), Dbl(800.0), Dbl(10000.0)), s.io.sliders(4), vco);
   val out = vcf
   io.o(0) := out;
   io.o(1) := out;
