@@ -27,14 +27,10 @@ class VCF extends Component {
   val scale  = Pow(Dbl(e), (Dbl(1.0)-p)*Dbl(1.386249));
   val r      = io.res * scale
   val x      = io.input - r * y4
-  val oldx   = Reg(x)
-  val oldy1  = Reg(y1)
-  val oldy2  = Reg(y2)
-  val oldy3  = Reg(y3)
-  y1        := x*p  + oldx*p  - k*y1;
-  y2        := y1*p + oldy1*p - k*y2;
-  y3        := y2*p + oldy2*p - k*y3;
-  val y4t    = y3*p + oldy3*p - k*y4;
+  y1        := x*p  + Reg(x)*p  - k*y1;
+  y2        := y1*p + Reg(y1)*p - k*y2;
+  y3        := y2*p + Reg(y2)*p - k*y3;
+  val y4t    = y3*p + Reg(y3)*p - k*y4;
   y4        := y4t - Pow(y4t, Dbl(3.0)) / Dbl(6.0);
   io.output := y4
 }

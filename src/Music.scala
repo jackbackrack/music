@@ -22,8 +22,20 @@ class MusicIO extends Bundle {
   val out = Vec(2){ Dbl(OUTPUT) };
 }
 
+object Interpolate {
+  def apply(a: Dbl, x: Dbl, y: Dbl): Dbl = 
+    (a * y) + ((Dbl(1.0)-a)*x)
+}
+
 class Sliders extends BlackBox {
   val io = new Bundle{ val sliders = Vec(8){ Dbl(OUTPUT) } }
+  def apply(idx: Int, min: Dbl, max: Dbl, pow: Dbl = null) = {
+    if (pow == null)
+      Interpolate(io.sliders(idx), min, max)
+    else
+      Pow(Interpolate(io.sliders(idx), Log(min, pow), Log(max, pow)), pow)
+  }
+  def apply(idx: Int) = io.sliders(idx);
 }
 
 class Time extends BlackBox {
@@ -36,11 +48,6 @@ class Speakers extends BlackBox {
 
 class Mic extends BlackBox {
   val io = new Bundle{ val channels = Vec(2){ Dbl(OUTPUT) } }
-}
-
-object Interpolate {
-  def apply(a: Dbl, x: Dbl, y: Dbl): Dbl = 
-    (a * y) + ((Dbl(1.0)-a)*x)
 }
 
 object Phase {
@@ -115,10 +122,11 @@ class Music extends Component {
   }
   val s   = new Sliders();
   val o   = new Speakers();
-  val f   = Interpolate(s.io.sliders(0), Dbl(100.0), Dbl(1000.0));
-  val lfo = Interpolate(s.io.sliders(1), Dbl(0.0), Dbl(2.0)) * SawWave(Interpolate(s.io.sliders(2), Dbl(0.0), Dbl(20.0)));
+  val f   = s(0, Dbl(10.0), Dbl(10000.0), Dbl(10.0));
+  val lfo = s(1, Dbl(0.0), Dbl(10.0)) * SawWave(s(2, Dbl(0.5), Dbl(10.0), Dbl(10.0)));
   val vco = SawWave(f + lfo)
-  val vcf = VCF(Interpolate(s.io.sliders(3), Dbl(800.0), Dbl(10000.0)), s.io.sliders(4), vco);
+  // val vcf = VCF(s(3, Dbl(2.0), Dbl(4.0), Dbl(10.0)), s(4), vco);
+  val vcf = VCF(s(3, Dbl(400.0), Dbl(10000.0), Dbl(10.0)), s(4), vco);
   val out = vcf
   io.o(0) := out;
   io.o(1) := out;
