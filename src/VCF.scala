@@ -16,7 +16,6 @@ class VCF extends Component {
     val input  = Dbl(INPUT);
     val output = Dbl(OUTPUT);
   };
-  val e      = 2.714;
   val y1     = Reg(resetVal = Dbl(0.0));
   val y2     = Reg(resetVal = Dbl(0.0));
   val y3     = Reg(resetVal = Dbl(0.0));
@@ -24,7 +23,7 @@ class VCF extends Component {
   val f      = Dbl(2.0) * io.cutoff / Dbl(44100.0);
   val k      = Dbl(3.6) * f - Dbl(1.6)*f*f - Dbl(1.0);
   val p      = (k + Dbl(1.0)) * Dbl(0.5);
-  val scale  = Pow(Dbl(e), (Dbl(1.0)-p)*Dbl(1.386249));
+  val scale  = Pow(Dbl(Math.E), (Dbl(1.0)-p)*Dbl(1.386249));
   val r      = io.res * scale
   val x      = io.input - r * y4
   y1        := x*p  + Reg(x)*p  - k*y1;

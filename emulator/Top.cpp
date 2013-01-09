@@ -37,8 +37,30 @@ void sim_t::close (void) {
 }
 
 int sim_t::render (int is_picking) {
+  double lfo1 = 0.5*(toDouble(music->Music__io_lfos_0.values[0])+1);
+  double lfo2 = 0.5*(toDouble(music->Music__io_lfos_1.values[0])+1);
+  glPushMatrix();
+  float fac = min(viz->get_width(), viz->get_height());
+  glScalef(fac, fac, fac);
+  glPushMatrix();
+  glTranslatef(-0.3, 0.0, 0.0);
+  glColor3d(lfo1, lfo1, lfo1);
+  draw_disk(0.25);
+  glPopMatrix();
+  glPushMatrix();
+  glTranslatef( 0.3, 0.0, 0.0);
+  glColor3d(lfo2, lfo2, lfo2);
+  draw_disk(0.25);
+  glPopMatrix();
+  glPopMatrix();
   return 1;
 }
+
+inline void set_slider(dat_t<64> &slider, int n) {
+  slider.values[0] = fromDouble(viz->sliders[n]);
+}
+
+#define COPY_SLIDER(n) set_slider(music->Music_s__io_sliders_ ## n, n)
 
 sim_t* sim_t::exec ( sim_viz_t *viz ) {
   dat_t<1> reset = LIT<1>(ticks == 0);
@@ -46,16 +68,25 @@ sim_t* sim_t::exec ( sim_viz_t *viz ) {
     // music->Music__io_in_sample_l.values[0] = fromFloat(viz->in_samples[0][i]);
     // music->Music__io_in_sample_r.values[0] = fromFloat(viz->in_samples[1][i]);
     // music->Music_t__io_time.values[0] = fromDouble(viz->audio_tick);
-    music->Music_s__io_sliders_0.values[0] = fromDouble(viz->sliders[0]);
-    music->Music_s__io_sliders_1.values[0] = fromDouble(viz->sliders[1]);
-    music->Music_s__io_sliders_2.values[0] = fromDouble(viz->sliders[2]);
-    music->Music_s__io_sliders_3.values[0] = fromDouble(viz->sliders[3]);
-    music->Music_s__io_sliders_4.values[0] = fromDouble(viz->sliders[4]);
-    music->Music_s__io_sliders_5.values[0] = fromDouble(viz->sliders[5]);
-    music->Music_s__io_sliders_6.values[0] = fromDouble(viz->sliders[6]);
-    music->Music_s__io_sliders_7.values[0] = fromDouble(viz->sliders[7]);
-    music->clock_lo(reset);
-    music->clock_hi(reset);
+  COPY_SLIDER( 1);
+  COPY_SLIDER( 2);
+  COPY_SLIDER( 3);
+  COPY_SLIDER( 4);
+  COPY_SLIDER( 5);
+  COPY_SLIDER( 6);
+  COPY_SLIDER( 7);
+  COPY_SLIDER( 8);
+  COPY_SLIDER(81);
+  COPY_SLIDER(82);
+  COPY_SLIDER(83);
+  COPY_SLIDER(84);
+  COPY_SLIDER(85);
+  COPY_SLIDER(86);
+  COPY_SLIDER(87);
+  COPY_SLIDER(88);
+  COPY_SLIDER(89);
+  music->clock_lo(reset);
+  music->clock_hi(reset);
     // viz->out_samples[0][i] = toFloat(music->Music__io_out_0.values[0]);
     // viz->out_samples[1][i] = toFloat(music->Music__io_out_1.values[0]);
     viz->speakers[0] = toDouble(music->Music__io_o_0.values[0]);
