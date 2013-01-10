@@ -280,14 +280,11 @@ class Music extends Component {
   m2.io.vcfc := s(sb2+3, Dbl(100.0), Dbl(10000.0), Dbl(2.0));
   m2.io.vcfq := s(kb2+3);
 
-  // val out = gain1 * m1.io.out + gain2 * m2.io.out
-  val out = MemBasedDelay(256, Dbl(1), SinWave(Dbl(440)));
+  val out = gain1 * m1.io.out + gain2 * m2.io.out
   io.o(0) := out;
   io.o(1) := out;
-  // io.lfos(0) := m1.io.lfo;
-  // io.lfos(1) := m2.io.lfo;
-  io.lfos(0) := Dbl(0);
-  io.lfos(1) := Dbl(0);
+  io.lfos(0) := m1.io.lfo;
+  io.lfos(1) := m2.io.lfo;
   o.io.channels(0) := out;
   o.io.channels(1) := out;
 }
