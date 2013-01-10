@@ -47,6 +47,9 @@ music: %: Top.o Music.o $(GUI)/app.a
 Top.o: Top.h Top.h Top.cpp Music.h
 	g++ -c $(CXXFLAGS) $(CPPFLAGS) Top.cpp
 
+Music.cpp: ../src/Music.scala
+	(cd ../sbt; sbt "project music" "run music")
+
 Music.o: $(CHISEL)/csrc/emulator.h Music.h Music.cpp
 	g++ -c $(CXXFLAGS) $(CPPFLAGS) Music.cpp
 
