@@ -12,9 +12,9 @@ object Main {
     val res = 
     args(0) match {
       case "music" => // FOR FPGA or ASIC one TILE with 8 queues in torus
-        chiselMain(cArgs, () => new Music())
+        chiselMain(cArgs, () => Module(new Music()))
       case "demo" => // FOR FPGA or ASIC one TILE with 8 queues in torus
-        chiselMain(cArgs, () => new Demo())
+        chiselMain(cArgs, () => Module(new Demo()))
     }
     // chiselMainTest(args, () => { Component.isReportDims = false; new Fabric(2) }){
     //   c => new FabricTests(c)}

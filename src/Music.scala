@@ -7,25 +7,24 @@ import scala.math._
 // Interfacing
 //
 
-
 class DemoIO extends Bundle {
   val t   = Dbl(INPUT);
-  val in  = Vec(2){ Dbl(INPUT) };
-  val out = Vec(2){ Dbl(OUTPUT) };
+  val in  = Vec.fill(2){ Dbl(INPUT) };
+  val out = Vec.fill(2){ Dbl(OUTPUT) };
 }
 
-class Demo extends Component {
+class Demo extends Module {
   val io = new DemoIO();
 }
 
 class MusicIO extends Bundle {
   val t   = Dbl(INPUT);
-  val in  = Vec(2){ Dbl(INPUT) };
-  val out = Vec(2){ Dbl(OUTPUT) };
+  val in  = Vec.fill(2){ Dbl(INPUT) };
+  val out = Vec.fill(2){ Dbl(OUTPUT) };
 }
 
 class Sliders extends BlackBox {
-  val io = new Bundle{ val sliders = Vec(256){ Dbl(OUTPUT) } }
+  val io = new Bundle{ val sliders = Vec.fill(256){ Dbl(OUTPUT) } }
 	
   // pow_curve: (== 1) is linear, (> 1) emphasizes bottom of range, (< 1) emphasizes top of range
   def apply(idx: Int, min: Dbl = Dbl(0), max: Dbl = Dbl(1), pow_curve: Dbl = Dbl(1)) = {
@@ -39,11 +38,11 @@ class Time extends BlackBox {
 }
 
 class Speakers extends BlackBox {
-  val io = new Bundle{ val channels = Vec(2){ Dbl(INPUT) } }
+  val io = new Bundle{ val channels = Vec.fill(2){ Dbl(INPUT) } }
 }
 
 class Mic extends BlackBox {
-  val io = new Bundle{ val channels = Vec(2){ Dbl(OUTPUT) } }
+  val io = new Bundle{ val channels = Vec.fill(2){ Dbl(OUTPUT) } }
 }
 
 //
@@ -75,7 +74,7 @@ object Interpolate {
 
 object Counter {
   def apply(max: Dbl) : Dbl = {
-    val count = Reg(resetVal = Dbl(0));
+    val count = Reg(init = Dbl(0));
     val next_count = count + Dbl(1);
     count := Mux(next_count >= max, Dbl(0), next_count);
     count
@@ -84,7 +83,7 @@ object Counter {
 
 object SampleHold {
   def apply(x: Dbl, trigger: Bool) : Dbl = {
-    val output = Reg(resetVal = Dbl(0));
+    val output = Reg(init = Dbl(0));
     output := Mux(trigger, x, output);
     output
   }
@@ -110,7 +109,7 @@ object SecToSamp { def apply(secs: Dbl): Dbl = { secs * SampsPerSec(); } }
 
 object SinWave {
   def apply(f: Dbl): Dbl = {
-    val phase = Reg(resetVal = Dbl(0.0));
+    val phase = Reg(init = Dbl(0.0));
     phase := phase + (f * TwoPi() / SampsPerSec());
     Sin(phase)
   }
@@ -118,7 +117,7 @@ object SinWave {
 
 object PhasorWave {
   def apply(f: Dbl): Dbl = {
-    val phase = Reg(resetVal = Dbl(0.0));
+    val phase = Reg(init = Dbl(0.0));
     val next_phase = phase + (f / SampsPerSec());
     phase := Mux(next_phase >= Dbl(1.0), next_phase - Dbl(1.0), next_phase);
     phase
@@ -143,7 +142,7 @@ object PulseTrain {
   def apply(freq : Dbl): Dbl = {
     val period_samps = SecToSamp(Dbl(1.0) / freq); //fixme: add rounding
     val counter = Counter(period_samps);
-    Mux(counter <= Fix(0), Dbl(1), Dbl(0));
+    Mux(counter <= Dbl(0), Dbl(1), Dbl(0));
   }
 }
 
@@ -185,30 +184,30 @@ object RingMod {
 
 object Smooth {
   def apply(x: Dbl, a: Dbl): Dbl = {
-    val sum = Reg(resetVal = Dbl(0.0));
+    val sum = Reg(init = Dbl(0.0));
     sum := ((Dbl(1.0)-a) * x) + (a*sum)
     sum
   }
 }
 
+/*
 object CombFilterFixed {
   def apply(input: Dbl, period: Double, feedback: Dbl): Dbl = {
     val period_samps : Int = floor(period * 44100.0).toInt;
-    val inner_reg = Reg(resetVal = Dbl(0.0));
+    val inner_reg = Reg(init = Dbl(0.0));
     val delayed = ShiftRegister(period_samps-1, inner_reg);
     inner_reg := (delayed * feedback) + input;
     inner_reg;
   }
 }
 
-/*
 object VCF {
 	def apply(cutoff: Dbl, res: Dbl, input: Dbl): Dbl = {
 		val e      = 2.714;
-		val y1     = Reg(resetVal = Dbl(0.0));
-		val y2     = Reg(resetVal = Dbl(0.0));
-		val y3     = Reg(resetVal = Dbl(0.0));
-		val y4     = Reg(resetVal = Dbl(0.0));
+		val y1     = Reg(init = Dbl(0.0));
+		val y2     = Reg(init = Dbl(0.0));
+		val y3     = Reg(init = Dbl(0.0));
+		val y4     = Reg(init = Dbl(0.0));
 		val f      = Dbl(2.0) * cutoff / Dbl(44100.0);
 		val k      = Dbl(3.6) * f - Dbl(1.6)*f*f - Dbl(1.0);
 		val p      = (k + Dbl(1.0)) * Dbl(0.5);
@@ -229,7 +228,7 @@ object VCF {
 // Application
 //*****************************************//
 
-class Monotron extends Component {
+class Monotron extends Module {
   val io = new Bundle {
     val swof = Dbl(INPUT);
     val lfof = Dbl(INPUT);
@@ -245,20 +244,20 @@ class Monotron extends Component {
   val lfo = io.lfoi * (lfo_saw + lfo_sin);
   val lfo_scaled = Dbl(0.8)*io.swof*lfo;
   val vco = SawWave(io.swof + lfo_scaled)
-  val vcf = VCF(io.vcfc, io.vcfq, vco);
+  val vcf = VCF(io.vcfc, io.vcfq, vco)
   io.out := vcf
   io.lfo := lfo
 }
 
-class Music extends Component {
+class Music extends Module {
   val io = new Bundle{ 
-    val o    = Vec(2){ Dbl(OUTPUT) };
-    val lfos = Vec(2){ Dbl(OUTPUT) };
+    val o    = Vec.fill(2){ Dbl(OUTPUT) };
+    val lfos = Vec.fill(2){ Dbl(OUTPUT) };
   }
-  val s   = new Sliders();
-  val o   = new Speakers();
+  val s   = Module(new Sliders())
+  val o   = Module(new Speakers())
 
-  val m1  = new Monotron();
+  val m1  = Module(new Monotron())
   val kb1 = 1;
   val sb1 = 81;
   val gain1 = s(sb1+0, Dbl(0.0), Dbl(1.0), Dbl(3.0));
@@ -269,7 +268,7 @@ class Music extends Component {
   m1.io.vcfc := s(sb1+3, Dbl(100.0), Dbl(10000.0), Dbl(2.0));
   m1.io.vcfq := s(kb1+3);
 
-  val m2  = new Monotron();
+  val m2  = Module(new Monotron())
   val kb2 = 5;
   val sb2 = 85;
   val gain2 = s(sb2+0, Dbl(0.0), Dbl(1.0), Dbl(3.0));
@@ -280,6 +279,7 @@ class Music extends Component {
   m2.io.vcfc := s(sb2+3, Dbl(100.0), Dbl(10000.0), Dbl(2.0));
   m2.io.vcfq := s(kb2+3);
 
+  // val out = SinWave(Dbl(440)); // gain1 * m1.io.out + gain2 * m2.io.out
   val out = gain1 * m1.io.out + gain2 * m2.io.out
   io.o(0) := out;
   io.o(1) := out;
@@ -305,9 +305,9 @@ object Mod { def apply(a: Dbl, b: Dbl) = { Remainder(a,b) * b; } }
 // object Random { def apply() : Dbl = { ??? } // need Modulo arithmetic
 
 object SimpleCounter {
-  def apply(max: Int, initial: Int = 0) : UFix = {
-    val count = Reg(resetVal = UFix(initial, log2Up(max)));
-    count := Mux(count === UFix(max-1), UFix(0), count + UFix(1))
+  def apply(max: Int, initial: Int = 0) : UInt = {
+    val count = Reg(init = UInt(initial, log2Up(max)));
+    count := Mux(count === UInt(max-1), UInt(0), count + UInt(1))
     count
   }
 }
@@ -315,11 +315,11 @@ object SimpleCounter {
 object MemBasedDelay { // currently outputs noise
   def apply(max_delay: Int, current_delay: Dbl, input: Dbl): Dbl = {
     val write_pos = SimpleCounter(max_delay, 0);
-    // val read_pos_raw = write_pos - current_delay.toFix;
-    // val read_pos = Mux(read_pos_raw < Fix(0), read_pos_raw + Fix(max_delay), read_pos_raw);
-    val delay = current_delay.toUFix;
-    val read_pos = Mux(write_pos < delay, write_pos + (UFix(max_delay) - delay), write_pos - delay);
-    val memory = Mem(max_delay) { Dbl() };
+    // val read_pos_raw = write_pos - current_delay.toSInt;
+    // val read_pos = Mux(read_pos_raw < SInt(0), read_pos_raw + Fix(max_delay), read_pos_raw);
+    val delay = current_delay.toUInt;
+    val read_pos = Mux(write_pos < delay, write_pos + (UInt(max_delay) - delay), write_pos - delay);
+    val memory = Mem(Dbl(), max_delay)
     val output = memory(read_pos);
     memory(write_pos) := input;
     output

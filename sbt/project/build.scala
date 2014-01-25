@@ -5,8 +5,8 @@ object BuildSettings
 {
   val buildOrganization = "edu.berkeley.cs"
   val buildVersion = "1.1"
-  val buildScalaVersion = "2.9.2"
-
+  // val buildScalaVersion = "2.9.2"
+  val buildScalaVersion = "2.10.1"
   def apply(srcpath: String) = {
     Defaults.defaultSettings ++ Seq (
       organization := buildOrganization,

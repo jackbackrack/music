@@ -93,16 +93,20 @@ sim_t* sim_t::exec ( sim_viz_t *viz ) {
     viz->speakers[1] = toDouble(music->Music__io_o_1.values[0]);
   // }
   ticks += 1;
+  return this;
 }
 
 int sim_viz_t::exec (int is_pause) {
   sim->exec(this);
+  return 1;
 }
 
 int sim_viz_t::handle_drag (vec_t<3> pos) {
+  return 1;
 }
 
 int sim_viz_t::process_picks (std::vector< int > picks) {
+  return 1;
 }
 
 keys_t* top_keys;
@@ -123,6 +127,7 @@ int sim_viz_t::key_hit (int cmd, int modifiers) {
   is_key_hit[cmd] = 1;
   key_modifiers = modifiers;
   now_keys->do_process_keys(cmd, 0, key_modifiers, sim);
+  return 1;
 }
 
 void sim_viz_t::show_status (float x, float y, float w, float h) {
@@ -151,6 +156,7 @@ int sim_viz_t::render_frame_monitors ( void ) {
   if (is_show_status) {
     show_status(viz->MAX_X-15, viz->MIN_Y+2, 30, 20);
   }
+  return 1;
 }
 
 int sim_viz_t::render (int is_picking) {
@@ -176,6 +182,7 @@ static int install_props (void) {
   props = new props_t();
   props->install(num_var);
   props->install(num_execs_var);
+  return 1;
 }
 
 static void sim_parse_args (int argc, const char *argv[]) {
@@ -202,6 +209,7 @@ int sim_viz_t::open(int args_offset, int argc, const char** argv) {
   init_gfx();
   sim->music = new Music_t();
   sim->open();
+  return 1;
 }
 
 int sim_viz_t::close ( void ) {

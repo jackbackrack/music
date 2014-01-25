@@ -1,5 +1,5 @@
 CC = gcc
-CXX = g++
+CXX = g++-4.8
 
 OS2 := $(strip $(shell uname))
 GUI = $(GUI_HOME)
@@ -9,7 +9,7 @@ ifeq ($(OS2), Darwin)
   LIBS = $(GUI)/app.a  -lobjc -lode -framework GLUT -framework OpenGL -lopencv_core -lopencv_highgui -lopencv_video -lopencv_imgproc -lopencv_objdetect -lopencv_calib3d -L/usr/local/lib -L/opt/local/lib -lportaudio -lportmidi #-lsolid #-lglaux # -pg # -framework Foundation
   #HLLIBS =
   CPPFLAGS=-I.. -I/opt/local/include -I/usr/local/include -I/opt/local/include/OpenEXR -I/usr/local/include/SOLID -I$(GUI) -I$(CHISEL)/csrc -D IS_AUDIO=1
-  CXXFLAGS=-flat_namespace -Wno-write-strings -g -O3  -D MACOSX=1 -D IS_ODE=1  # -pg  
+  CXXFLAGS=-std=c++11 -Wno-write-strings -g -O3  -D MACOSX=1 -D IS_ODE=1  # -pg  -flat_namespace
 else
   OS := $(strip $(shell uname -o))
   ifeq ($(OS), GNU/Linux)
